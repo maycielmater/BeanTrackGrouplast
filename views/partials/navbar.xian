@@ -1,0 +1,28 @@
+
+<nav class="nav">
+  <a class="brand" href="/">☕ BeanTrack</a>
+  <div class="navlinks">
+    <a href="/kiosk">Order</a>
+
+    {{#if currentUser}}
+      {{#if (eq currentUser.role "admin")}}
+        <a href="/admin">Dashboard</a>
+        <a href="/products">Products</a>
+        <a href="/orders">Orders</a>
+        <a href="/inventory">Inventory</a>
+        <a href="/stock-history">Stock History</a>
+        <a href="/recipes">Recipes</a>
+        <a href="/purchasing">Purchasing</a>
+        <a href="/reports">Sales Reports</a>
+      {{/if}}
+
+      <span class="welcome">Hi, {{currentUser.name}}</span>
+      <form action="/logout" method="POST">
+        <button class="linkbutton" type="submit">Logout</button>
+      </form>
+    {{else}}
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    {{/if}}
+  </div>
+</nav>

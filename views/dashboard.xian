@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="en">
+{{> head}}
+<body>
+{{> navbar}}
+
+<main class="container">
+
+  <div class="page-title">
+    <p class="eyebrow">OVERVIEW</p>
+    <h1>Admin Dashboard</h1>
+    <p>Welcome back, {{currentUser.name}}. Here's your shop at a glance.</p>
+  </div>
+
+  {{#if notice}}
+    <div class="notice">{{notice}}</div>
+  {{/if}}
+
+  <div class="stats-grid">
+    <div class="stat">
+      <span>Products</span>
+      <strong>{{productCount}}</strong>
+    </div>
+
+    <div class="stat">
+      <span>Ingredients</span>
+      <strong>{{ingredientCount}}</strong>
+    </div>
+
+    <div class="stat">
+      <span>Orders</span>
+      <strong>{{orderCount}}</strong>
+    </div>
+
+    <div class="stat">
+      <span>Purchases</span>
+      <strong>{{purchaseCount}}</strong>
+    </div>
+
+    <div class="stat">
+      <span>Low Stock</span>
+      <strong>{{lowStockCount}}</strong>
+    </div>
+
+    <div class="stat">
+      <span>Out of Stock</span>
+      <strong>{{outOfStockCount}}</strong>
+    </div>
+  </div>
+
+  <!-- LOW STOCK ALERT -->
+  <section class="panel">
+    <div class="sectionhead">
+      <div>
+        <p class="eyebrow">ATTENTION NEEDED</p>
+        <h2>Low Stock Alerts</h2>
+      </div>
+      <a class="textlink" href="/inventory">Manage Inventory →</a>
+    </div>
+
+    {{#if lowStock.length}}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ingredient</th>
+              <th>Available</th>
+              <th>Reorder Level</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each lowStock}}
+              <tr>
+                <td>{{name}}</td>
+                <td>{{quantity}} {{unit}}</td>
+                <td>{{reorderLevel}} {{unit}}</td>
+                <td><span class="status low">Low Stock</span></td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    {{else}}
+      <p class="muted">No low-stock ingredients. Nice work!</p>
+    {{/if}}
+  </section>
+
+  <!-- OUT OF STOCK ALERT -->
+  <section class="panel">
+    <div class="sectionhead">
+      <div>
+        <p class="eyebrow">URGENT ATTENTION</p>
+        <h2>Out of Stock Alerts</h2>
+      </div>
+      <a class="textlink" href="/purchasing">Record Purchase →</a>
+    </div>
+
+    {{#if outOfStock.length}}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ingredient</th>
+              <th>Available</th>
+              <th>Reorder Level</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each outOfStock}}
+              <tr>
+                <td>{{name}}</td>
+                <td>{{quantity}} {{unit}}</td>
+                <td>{{reorderLevel}} {{unit}}</td>
+                <td><span class="status low">Out of Stock</span></td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    {{else}}
+      <p class="muted">All ingredients are currently available.</p>
+    {{/if}}
+  </section>
+
+</main>
+
+{{> foot}}
+</body>
+</html>

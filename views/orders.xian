@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="en">
+{{> head}}
+<body>
+{{> navbar}}
+
+<main class="container">
+
+  <div class="page-title">
+    <p class="eyebrow">ORDER MANAGEMENT</p>
+    <h1>Orders</h1>
+    <p>Manage customer orders, confirm payments, and monitor preparation.</p>
+  </div>
+
+  {{#if notice}}
+    <div class="notice">{{notice}}</div>
+  {{/if}}
+
+  {{#each orders}}
+    <section class="panel order-card">
+
+      <div class="sectionhead">
+        <div>
+          <h2>{{orderNumber}}</h2>
+          <p class="muted">
+            {{customerName}} · {{formatDate createdAt}}
+          </p>
+        </div>
+        <strong>{{currency total}}</strong>
+      </div>
+
+      <ul class="order-items">
+        {{#each OrderItems}}
+          <li>
+            {{quantity}} × {{productName}}
+            <span>{{currency subtotal}}</span>
+          </li>
+        {{/each}}
+      </ul>
+
+      <div class="order-details">
+        <p>
+          <strong>Payment:</strong>
+          {{#if (eq paymentStatus "paid")}}
+            <span class="status-paid">PAID</span>
+          {{else if (eq paymentStatus "unpaid")}}
+            <span class="status-unpaid">UNPAID</span>
+          {{else}}
+            <span class="status-unknown">UNKNOWN</span>
+          {{/if}}
+        </p>
+
+        <p>
+          <strong>Order Status:</strong>
+          {{status}}
+        </p>
+      </div>
+
+      {{#if (eq status "cancelled")}}
+        <p class="muted">This order has been cancelled.</p>
+
+      {{else}}
+
+        {{#if (eq paymentStatus "paid")}}
+          <p class="muted">Payment confirmed.</p>
+
+        {{else}}
+          <form method="POST" action="/orders/{{id}}/payment">
+            <button class="btn btn-small" type="submit">
+              Confirm Payment
+            </button>
+          </form>
+        {{/if}}
+
+        {{#if (eq status "preparing")}}
+          <form class="inline-form" method="POST" action="/orders/{{id}}/status">
+            <input type="hidden" name="status" value="ready">
+            <button class="btn btn-small btn-outline" type="submit">
+              Mark as Ready
+            </button>
+          </form>
+        {{/if}}
+
+        {{#if (eq status "ready")}}
+          <form class="inline-form" method="POST" action="/orders/{{id}}/status">
+            <input type="hidden" name="status" value="completed">
+            <button class="btn btn-small btn-outline" type="submit">
+              Mark as Completed
+            </button>
+          </form>
+        {{/if}}
+
+        <form class="inline-form" method="POST" action="/orders/{{id}}/status"
+              onsubmit="return confirm('Are you sure you want to cancel this order?')">
+          <input type="hidden" name="status" value="cancelled">
+          <button class="btn btn-small btn-outline" type="submit">
+            Cancel Order
+          </button>
+        </form>
+
+      {{/if}}
+
+    </section>
+  {{else}}
+    <section class="panel">
+      No orders yet.
+    </section>
+  {{/each}}
+
+</main>
+
+{{> foot}}
+</body>
+</html>

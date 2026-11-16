@@ -1,0 +1,1 @@
+<!DOCTYPE html><html lang="en">{{> head}}<body>{{> navbar}}<main class="container"><section class="panel"><h1>Page not found</h1><p>The page you're looking for doesn't exist.</p><a class="btn btn-primary" href="/">Go to kiosk</a></section></main>{{> foot}}</body></html>

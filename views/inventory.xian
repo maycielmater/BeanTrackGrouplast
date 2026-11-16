@@ -1,0 +1,244 @@
+
+<!DOCTYPE html>
+<html lang="en">
+{{> head}}
+<body>
+{{> navbar}}
+
+<main class="container">
+
+  <div class="page-title">
+    <p class="eyebrow">STOCK CONTROL</p>
+    <h1>Inventory Management</h1>
+    <p>Monitor ingredients, stock levels, and inventory movements.</p>
+  </div>
+
+  {{#if notice}}
+    <div class="notice">{{notice}}</div>
+  {{/if}}
+
+  <section class="panel">
+    <h2>Add New Ingredient</h2>
+
+    <form class="form-grid" method="POST" action="/inventory">
+
+      <label>
+        Ingredient Name
+        <input type="text" name="name" placeholder="e.g. Coffee Beans" required>
+      </label>
+
+      <label>
+        Unit
+        <select name="unit" required>
+          <option value="pcs">Pieces (pcs)</option>
+          <option value="g">Grams (g)</option>
+          <option value="kg">Kilograms (kg)</option>
+          <option value="ml">Milliliters (ml)</option>
+          <option value="L">Liters (L)</option>
+          <option value="pack">Pack</option>
+          <option value="bottle">Bottle</option>
+        </select>
+      </label>
+
+      <label>
+        Opening Quantity
+        <input type="number" name="quantity" min="0" step="0.001" value="0" required>
+      </label>
+
+      <label>
+        Reorder Level
+        <input type="number" name="reorderLevel" min="0" step="0.001" value="0" required>
+      </label>
+
+      <label>
+        Cost Per Unit (₱)
+        <input type="number" name="costPerUnit" min="0" step="0.01" value="0" required>
+      </label>
+
+      <div>
+        <button type="submit" class="btn btn-primary">
+          Add Ingredient
+        </button>
+      </div>
+
+    </form>
+  </section>
+
+  <section class="panel">
+
+    <div class="sectionhead">
+      <div>
+        <h2>Ingredient Stock</h2>
+        <p class="muted">Monitor your available coffee shop supplies.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+
+      <label>
+        Search Ingredient
+        <input
+          type="search"
+          id="ingredientSearch"
+          placeholder="Search ingredient name..."
+        >
+      </label>
+
+      <label>
+        Filter Stock Status
+        <select id="stockFilter">
+          <option value="all">All Stock</option>
+          <option value="In Stock">In Stock</option>
+          <option value="Low Stock">Low Stock</option>
+          <option value="Out of Stock">Out of Stock</option>
+        </select>
+      </label>
+
+    </div>
+
+    <div class="table-wrap">
+      <table id="inventoryTable">
+
+        <thead>
+          <tr>
+            <th>Ingredient</th>
+            <th>Available Stock</th>
+            <th>Reorder Level</th>
+            <th>Cost / Unit</th>
+            <th>Stock Status</th>
+            <th>Stock Adjustment</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          {{#each ingredients}}
+          <tr class="inventory-row"
+              data-name="{{name}}"
+              data-status="{{stockStatus}}">
+
+            <td>
+              <strong>{{name}}</strong>
+              <small>{{unit}}</small>
+            </td>
+
+            <td>{{quantity}} {{unit}}</td>
+
+            <td>{{reorderLevel}} {{unit}}</td>
+
+            <td>₱{{costPerUnit}}</td>
+
+            <td>
+              {{#if (eq stockStatus "Out of Stock")}}
+                <span class="status low">Out of Stock</span>
+              {{else}}
+                {{#if (eq stockStatus "Low Stock")}}
+                  <span class="status low">Low Stock</span>
+                {{else}}
+                  <span class="status good">In Stock</span>
+                {{/if}}
+              {{/if}}
+            </td>
+
+            <td>
+              <form
+                class="inline-form"
+                method="POST"
+                action="/inventory/{{id}}/adjust"
+              >
+
+                <input
+                  type="number"
+                  name="quantity"
+                  min="0.001"
+                  step="0.001"
+                  placeholder="Quantity"
+                  required
+                >
+
+                <select name="movementType" required>
+                  <option value="in">Stock In</option>
+                  <option value="out">Stock Out</option>
+                </select>
+
+                <input
+                  type="text"
+                  name="note"
+                  placeholder="Reason / Notes"
+                  maxlength="255"
+                >
+
+                <button type="submit" class="btn btn-small btn-outline">
+                  Update
+                </button>
+
+              </form>
+            </td>
+
+          </tr>
+
+          {{else}}
+          <tr>
+            <td colspan="6">No ingredients available. Add your first ingredient.</td>
+          </tr>
+          {{/each}}
+
+          <tr id="noResults" style="display:none;">
+            <td colspan="6">No matching ingredients found.</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const searchInput = document.getElementById("ingredientSearch");
+  const stockFilter = document.getElementById("stockFilter");
+  const rows = document.querySelectorAll(".inventory-row");
+  const noResults = document.getElementById("noResults");
+
+  function filterInventory() {
+
+    const searchValue = searchInput.value.toLowerCase().trim();
+    const selectedStatus = stockFilter.value;
+
+    let visibleCount = 0;
+
+    rows.forEach(function (row) {
+
+      const ingredientName = row.dataset.name.toLowerCase();
+      const status = row.dataset.status;
+
+      const matchesSearch = ingredientName.includes(searchValue);
+
+      const matchesStatus =
+        selectedStatus === "all" || status === selectedStatus;
+
+      const shouldShow = matchesSearch && matchesStatus;
+
+      row.style.display = shouldShow ? "" : "none";
+
+      if (shouldShow) {
+        visibleCount++;
+      }
+
+    });
+
+    noResults.style.display = visibleCount === 0 ? "" : "none";
+  }
+
+  searchInput.addEventListener("input", filterInventory);
+  stockFilter.addEventListener("change", filterInventory);
+
+});
+</script>
+
+{{> foot}}
+</body>
+</html>

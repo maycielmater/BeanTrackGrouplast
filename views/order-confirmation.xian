@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+<html lang="en">
+{{> head}}
+
+<body>
+{{> navbar}}
+
+<main class="container confirmation-page">
+  <section class="confirmation-card">
+
+    <div class="success-icon">✓</div>
+
+    <p class="eyebrow">BEANTRACK COFFEE SHOP</p>
+
+    <h1>Order placed<br><em>successfully!</em></h1>
+
+    <p class="confirmation-message">
+      Your order has been received. Please proceed to the cashier
+      to pay for your order.
+    </p>
+
+    <div class="order-number">
+      <span>YOUR ORDER NUMBER</span>
+      <strong>{{order.orderNumber}}</strong>
+    </div>
+
+    <div class="order-details">
+      <div class="detail-row">
+        <span>Customer</span>
+        <strong>{{order.customerName}}</strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Payment Status</span>
+        <strong class="status-unpaid">
+          {{order.paymentStatus}}
+        </strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Order Status</span>
+        <strong>{{order.status}}</strong>
+      </div>
+    </div>
+
+    <div class="order-items">
+      <h2>Order Summary</h2>
+
+      {{#each order.OrderItems}}
+        <div class="item-row">
+          <div>
+            <strong>{{productName}}</strong>
+            <p>{{quantity}} × {{currency unitPrice}}</p>
+          </div>
+          <strong>{{currency subtotal}}</strong>
+        </div>
+      {{/each}}
+
+      <div class="total-row">
+        <span>Total Amount to Pay</span>
+        <strong>{{currency order.total}}</strong>
+      </div>
+    </div>
+
+    <div class="confirmation-note">
+      <strong>What's next?</strong>
+      <p>
+        1. Proceed to the cashier and pay your total amount.
+        <br>
+        2. Keep your order number.
+        <br>
+        3. Wait for your order to be prepared.
+        <br>
+        4. When your order is READY, listen for your order number
+        and pick it up at the counter.
+      </p>
+    </div>
+
+    <a href="/kiosk" class="btn btn-primary order-again">
+      Order Again →
+    </a>
+
+    <p class="footer-message">
+      FRESHLY MADE · MADE FOR YOU
+    </p>
+
+  </section>
+</main>
+
+{{> foot}}
+
+<style>
+.confirmation-page {
+  max-width: 760px;
+  padding-top: 45px;
+  padding-bottom: 60px;
+}
+
+.confirmation-card {
+  background: #fff;
+  border: 1px solid #e5e7df;
+  border-radius: 20px;
+  padding: 45px;
+  text-align: center;
+  box-shadow: 0 12px 35px rgba(32, 39, 32, 0.06);
+}
+
+.success-icon {
+  width: 75px;
+  height: 75px;
+  margin: 0 auto 22px;
+  border-radius: 50%;
+  background: #e5f1e8;
+  color: #244b38;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  font-weight: bold;
+}
+
+.confirmation-card h1 {
+  font-size: 42px;
+  line-height: 1.1;
+  margin: 12px 0;
+  color: #244b38;
+}
+
+.confirmation-card h1 em {
+  font-style: italic;
+}
+
+.confirmation-message {
+  color: #778078;
+  line-height: 1.7;
+  max-width: 470px;
+  margin: 15px auto 28px;
+}
+
+.order-number {
+  background: #f6f4ee;
+  border: 1px dashed #b9c5b9;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 25px;
+}
+
+.order-number span {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #778078;
+  margin-bottom: 7px;
+}
+
+.order-number strong {
+  color: #244b38;
+  font-size: 22px;
+}
+
+.order-details {
+  text-align: left;
+  border-bottom: 1px solid #e5e7df;
+  padding-bottom: 18px;
+  margin-bottom: 25px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 9px 0;
+  color: #778078;
+}
+
+.detail-row strong {
+  color: #202720;
+  text-align: right;
+  text-transform: capitalize;
+}
+
+.status-unpaid {
+  color: #a16a21 !important;
+}
+
+.order-items {
+  text-align: left;
+}
+
+.order-items h2 {
+  font-size: 20px;
+  color: #244b38;
+  margin-bottom: 18px;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 13px 0;
+  border-bottom: 1px solid #e5e7df;
+}
+
+.item-row p {
+  color: #778078;
+  font-size: 13px;
+  margin: 5px 0 0;
+}
+
+.item-row strong {
+  color: #202720;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding-top: 22px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #244b38;
+}
+
+.total-row strong {
+  font-size: 24px;
+}
+
+.confirmation-note {
+  text-align: left;
+  background: #f6f4ee;
+  border-radius: 12px;
+  padding: 18px;
+  margin: 28px 0;
+}
+
+.confirmation-note strong {
+  color: #244b38;
+}
+
+.confirmation-note p {
+  color: #778078;
+  font-size: 14px;
+  line-height: 1.8;
+  margin-bottom: 0;
+}
+
+.order-again {
+  display: inline-block;
+  text-decoration: none;
+  padding: 14px 30px;
+  border-radius: 8px;
+}
+
+.footer-message {
+  margin-top: 25px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #778078;
+}
+
+@media (max-width: 600px) {
+  .confirmation-card {
+    padding: 25px 18px;
+  }
+
+  .confirmation-card h1 {
+    font-size: 34px;
+  }
+
+  .detail-row {
+    font-size: 13px;
+  }
+
+  .total-row {
+    font-size: 15px;
+  }
+
+  .total-row strong {
+    font-size: 20px;
+  }
+}
+</style>
+
+</body>
+</html>

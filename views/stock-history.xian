@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html lang="en">
+{{> head}}
+<body>
+{{> navbar}}
+
+<main class="container">
+
+  <div class="page-title">
+    <p class="eyebrow">INVENTORY RECORDS</p>
+    <h1>Stock Movement History</h1>
+    <p>Track all stock additions, deductions, and adjustments.</p>
+  </div>
+
+  <section class="panel">
+
+    <div class="sectionhead">
+      <div>
+        <h2>Transaction Records</h2>
+        <p class="muted">Showing the latest 100 transactions.</p>
+      </div>
+      <a href="/inventory" class="textlink">Back to Inventory</a>
+    </div>
+
+    <div class="form-grid">
+
+      <label>
+        Search Ingredient
+        <input type="search" id="historySearch"
+               placeholder="Search ingredient...">
+      </label>
+
+      <label>
+        Filter Movement
+        <select id="movementFilter">
+          <option value="all">All Movements</option>
+          <option value="in">Stock In</option>
+          <option value="out">Stock Out</option>
+        </select>
+      </label>
+
+    </div>
+
+    <div class="table-wrap">
+      <table id="historyTable">
+
+        <thead>
+          <tr>
+            <th>Date & Time</th>
+            <th>Ingredient</th>
+            <th>Movement Type</th>
+            <th>Quantity</th>
+            <th>Notes / Reason</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          {{#each movements}}
+          <tr class="history-row"
+              data-name="{{Ingredient.name}}"
+              data-type="{{movementType}}">
+
+            <td>{{formatDate createdAt}}</td>
+
+            <td>
+              <strong>{{Ingredient.name}}</strong>
+              <small>{{Ingredient.unit}}</small>
+            </td>
+
+            <td>
+              {{#if (eq movementType "in")}}
+                <span class="status good">Stock In</span>
+              {{else}}
+                {{#if (eq movementType "out")}}
+                  <span class="status low">Stock Out</span>
+                {{else}}
+                  <span class="status">Adjustment</span>
+                {{/if}}
+              {{/if}}
+            </td>
+
+            <td>
+              {{#if (eq movementType "in")}}+{{/if}}
+              {{#if (eq movementType "out")}}-{{/if}}
+              {{quantity}} {{Ingredient.unit}}
+            </td>
+
+            <td>{{#if note}}{{note}}{{else}}No notes{{/if}}</td>
+
+          </tr>
+
+          {{else}}
+          <tr>
+            <td colspan="5">No stock movement records found.</td>
+          </tr>
+          {{/each}}
+
+          <tr id="emptyHistory" style="display:none;">
+            <td colspan="5">No matching records found.</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const search = document.getElementById("historySearch");
+  const filter = document.getElementById("movementFilter");
+  const rows = document.querySelectorAll(".history-row");
+  const empty = document.getElementById("emptyHistory");
+
+  function filterHistory() {
+
+    const keyword = search.value.toLowerCase().trim();
+    const selected = filter.value;
+
+    let count = 0;
+
+    rows.forEach(function(row) {
+
+      const name = row.dataset.name.toLowerCase();
+      const type = row.dataset.type;
+
+      const matchName = name.includes(keyword);
+      const matchType = selected === "all" || selected === type;
+
+      const visible = matchName && matchType;
+
+      row.style.display = visible ? "" : "none";
+
+      if (visible) count++;
+
+    });
+
+    empty.style.display = count === 0 ? "" : "none";
+  }
+
+  search.addEventListener("input", filterHistory);
+  filter.addEventListener("change", filterHistory);
+
+});
+</script>
+
+{{> foot}}
+</body>
+</html>

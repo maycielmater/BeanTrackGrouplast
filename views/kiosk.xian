@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="en">
+{{> head}}
+<body>
+{{> navbar}}
+
+<main class="container">
+
+  <section class="hero">
+    <div>
+      <p class="eyebrow">FRESHLY MADE - MADE FOR YOU</p>
+      <h1>Your coffee,<br><em>your moment.</em></h1>
+      <p>Choose your favorites and send your order straight to the barista.</p>
+    </div>
+    <div class="hero-mark">BT<span>☕</span></div>
+  </section>
+
+  {{#if notice}}
+    <div class="notice">{{notice}}</div>
+  {{/if}}
+
+  <form action="/orders" method="POST">
+
+    <div class="sectionhead">
+      <div>
+        <p class="eyebrow">THE MENU</p>
+        <h2>Find your brew</h2>
+      </div>
+
+      <input
+        class="customer-input"
+        name="customerName"
+        placeholder="Your name (optional)"
+      >
+    </div>
+
+    <div class="product-grid">
+
+      {{#each products}}
+
+        <article class="product-card">
+
+          {{#if image}}
+            <img class="product-image" src="{{image}}" alt="{{name}}">
+          {{else}}
+            <div class="product-placeholder">☕</div>
+          {{/if}}
+
+          <div class="product-info">
+
+            <h3>{{name}}</h3>
+            <p>{{description}}</p>
+
+            <div class="product-bottom">
+
+              <strong>{{currency price}}</strong>
+
+              <label>
+                Qty
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  name="quantity[product_{{id}}]"
+                  value="0"
+                >
+              </label>
+
+            </div>
+
+          </div>
+        </article>
+
+      {{else}}
+
+        <div class="empty">
+          No products available yet. Please check back soon.
+        </div>
+
+      {{/each}}
+
+    </div>
+
+    {{#if products.length}}
+      <div class="order-submit">
+        <span>Select quantities, then place your order.</span>
+        <button class="btn btn-primary" type="submit">
+          Place order →
+        </button>
+      </div>
+    {{/if}}
+
+  </form>
+
+</main>
+
+{{> foot}}
+</body>
+</html>

@@ -1,0 +1,1 @@
+<!DOCTYPE html><html lang="en">{{> head}}<body>{{> navbar}}<main class="container"><section class="panel"><h1>{{title}}</h1><p>{{message}}</p><a href="/">Return home</a></section></main>{{> foot}}</body></html>

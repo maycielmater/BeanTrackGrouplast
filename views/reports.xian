@@ -1,0 +1,75 @@
+{{> head}}
+
+<div class="container">
+  <div class="page-title">
+    <div>
+      <p class="eyebrow">BEANTRACK ADMIN</p>
+      <h1>Sales Reports</h1>
+      <p class="muted">Overview of paid sales and product performance.</p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat">
+      <p class="muted">Today's Sales</p>
+      <h2>{{dailySales}}</h2>
+      <p>{{dailyOrderCount}} paid orders</p>
+    </div>
+
+    <div class="stat">
+      <p class="muted">This Week's Sales</p>
+      <h2>{{weeklySales}}</h2>
+      <p>{{weeklyOrderCount}} paid orders</p>
+    </div>
+
+    <div class="stat">
+      <p class="muted">This Month's Sales</p>
+      <h2>{{monthlySales}}</h2>
+      <p>{{monthlyOrderCount}} paid orders</p>
+    </div>
+
+    <div class="stat">
+      <p class="muted">Completed Orders This Month</p>
+      <h2>{{completedOrders}}</h2>
+      <p>Successfully completed orders</p>
+    </div>
+  </div>
+
+  <section class="panel">
+    <div class="sectionhead">
+      <div>
+        <h2>Best-Selling Products</h2>
+        <p class="muted">Top 5 products based on quantity sold this month.</p>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Quantity Sold</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each bestSellingProducts}}
+            <tr>
+              <td>{{name}}</td>
+              <td>{{quantity}}</td>
+            </tr>
+          {{else}}
+            <tr>
+              <td colspan="2">No sales recorded this month yet.</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="muted">
+    Reports include paid orders and exclude cancelled orders.
+  </p>
+</div>
+
+{{> foot}}
