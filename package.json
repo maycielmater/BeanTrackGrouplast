@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "xian": "nodemon index.js"
+    "xian": "node index.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

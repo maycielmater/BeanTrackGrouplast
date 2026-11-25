@@ -1,1 +1,102 @@
-<!DOCTYPE html><html lang="en">{{> head}}<body>{{> navbar}}<main class="container"><div class="page-title"><p class="eyebrow">MENU MANAGEMENT</p><h1>Products</h1><p>Add and manage the drinks shown on the kiosk.</p></div>{{#if notice}}<div class="notice">{{notice}}</div>{{/if}}<section class="panel"><h2>Add product</h2><form class="form-grid" method="POST" action="/products" enctype="multipart/form-data"><label>Product name<input name="name" required></label><label>Price (₱)<input type="number" name="price" min="0" step="0.01" required></label><label class="span2">Description<textarea name="description" rows="2"></textarea></label><label class="span2">Product photo<input type="file" name="image" accept="image/png,image/jpeg,image/webp"></label><div><button class="btn btn-primary">Save product</button></div></form></section><section class="panel"><h2>Menu items</h2><div class="table-wrap"><table><thead><tr><th>Product</th><th>Price</th><th>Availability</th><th>Action</th></tr></thead><tbody>{{#each products}}<tr><td>{{name}}</td><td>{{currency price}}</td><td>{{#if isAvailable}}Available{{else}}Hidden{{/if}}</td><td><form method="POST" action="/products/{{id}}/toggle"><button class="btn btn-small btn-outline">Toggle</button></form></td></tr>{{else}}<tr><td colspan="4">No products added.</td></tr>{{/each}}</tbody></table></div></section></main>{{> foot}}</body></html>
+
+<!DOCTYPE html>
+<html lang="en">
+{{> head}}
+<body>
+{{> navbar}}
+
+<main class="container">
+  <div class="page-title">
+    <p class="eyebrow">MENU MANAGEMENT</p>
+    <h1>Products</h1>
+    <p>Add and manage the drinks shown on the kiosk.</p>
+  </div>
+
+  {{#if notice}}
+    <div class="notice">{{notice}}</div>
+  {{/if}}
+
+  <section class="panel">
+    <h2>Add product</h2>
+
+    <form class="form-grid" method="POST" action="/products" enctype="multipart/form-data">
+      <label>
+        Product name
+        <input name="name" required>
+      </label>
+
+      <label>
+        Price (₱)
+        <input type="number" name="price" min="0" step="0.01" required>
+      </label>
+
+      <label>
+        Category
+        <select name="category" required>
+          <option value="">Select category</option>
+          <option value="Coffee">Coffee</option>
+          <option value="Non-Coffee">Non-Coffee</option>
+          <option value="Milk Tea">Milk Tea</option>
+          <option value="Cookies">Cookies</option>
+          <option value="Snacks">Snacks</option>
+        </select>
+      </label>
+
+      <label class="span2">
+        Description
+        <textarea name="description" rows="2"></textarea>
+      </label>
+
+      <label class="span2">
+        Product photo
+        <input type="file" name="image" accept="image/png,image/jpeg,image/webp">
+      </label>
+
+      <div>
+        <button class="btn btn-primary">Save product</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Menu items</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Availability</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {{#each products}}
+            <tr>
+              <td>{{name}}</td>
+              <td>{{#if category}}{{category}}{{else}}Not set{{/if}}</td>
+              <td>{{currency price}}</td>
+              <td>{{#if isAvailable}}Available{{else}}Hidden{{/if}}</td>
+              <td>
+                <form method="POST" action="/products/{{id}}/toggle">
+                  <button class="btn btn-small btn-outline">Toggle</button>
+                </form>
+              </td>
+            </tr>
+          {{else}}
+            <tr>
+              <td colspan="5">No products added.</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+{{> foot}}
+</body>
+</html>

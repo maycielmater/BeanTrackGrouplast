@@ -1,100 +1,140 @@
-
 <!DOCTYPE html>
 <html lang="en">
 {{> head}}
 <body>
 {{> navbar}}
+<main class="container kiosk-app">
+  {{#if notice}}<div class="notice">{{notice}}</div>{{/if}}
 
-<main class="container">
-
-  <section class="hero">
-    <div>
-      <p class="eyebrow">FRESHLY MADE - MADE FOR YOU</p>
-      <h1>Your coffee,<br><em>your moment.</em></h1>
-      <p>Choose your favorites and send your order straight to the barista.</p>
-    </div>
-    <div class="hero-mark">BT<span>☕</span></div>
+  <section id="start-screen" class="kiosk-screen start-screen">
+    <p class="eyebrow">BEANTRACK COFFEE SHOP</p>
+    <div class="kiosk-cup">☕</div>
+    <h1>Freshly made,<br><em>made for you.</em></h1>
+    <p>Choose your favorites and review your order before placing it.</p>
+    <button type="button" id="start-order" class="btn btn-primary kiosk-big-button">Start Order →</button>
   </section>
 
-  {{#if notice}}
-    <div class="notice">{{notice}}</div>
-  {{/if}}
-
-  <form action="/orders" method="POST">
-
-    <div class="sectionhead">
-      <div>
-        <p class="eyebrow">THE MENU</p>
-        <h2>Find your brew</h2>
-      </div>
-
-      <input
-        class="customer-input"
-        name="customerName"
-        placeholder="Your name (optional)"
-      >
+  <section id="menu-screen" class="kiosk-screen" hidden>
+    <div class="kiosk-topbar">
+      <div><p class="eyebrow">SELF-SERVICE KIOSK</p><h1>Choose your items</h1></div>
+      <button type="button" id="open-cart" class="btn btn-primary">View Cart (<span id="cart-count">0</span>)</button>
     </div>
-
-    <div class="product-grid">
-
-      {{#each products}}
-
-        <article class="product-card">
-
-          {{#if image}}
-            <img class="product-image" src="{{image}}" alt="{{name}}">
-          {{else}}
-            <div class="product-placeholder">☕</div>
-          {{/if}}
-
-          <div class="product-info">
-
-            <h3>{{name}}</h3>
-            <p>{{description}}</p>
-
-            <div class="product-bottom">
-
-              <strong>{{currency price}}</strong>
-
-              <label>
-                Qty
-                <input
-                  type="number"
-                  min="0"
-                  max="20"
-                  name="quantity[product_{{id}}]"
-                  value="0"
-                >
-              </label>
-
+    <div class="kiosk-layout">
+      <aside class="kiosk-categories"><h2>Categories</h2><div id="category-list"></div></aside>
+      <div class="kiosk-menu-content">
+        <div class="kiosk-menu-heading"><h2 id="category-title">All Items</h2><input id="menu-search" type="search" placeholder="Search menu..."></div>
+        <div id="product-menu" class="kiosk-product-grid">
+          {{#each products}}
+          <article class="kiosk-product" data-id="{{id}}" data-name="{{name}}" data-description="{{description}}" data-category="{{category}}" data-price="{{price}}" data-image="{{image}}">            {{#if image}}<img src="{{image}}" alt="{{name}}">{{else}}<div class="kiosk-product-placeholder">☕</div>{{/if}}
+            <div class="kiosk-product-info"><h3>{{name}}</h3><p>{{description}}</p><strong class="kiosk-price">{{currency price}}</strong>
+              <div class="kiosk-quantity"><button type="button" class="qty-minus" aria-label="Decrease {{name}}">−</button><span class="qty-value">0</span><button type="button" class="qty-plus" aria-label="Increase {{name}}">+</button></div>
+              <button type="button" class="add-item">Add to Cart</button>
             </div>
-
-          </div>
-        </article>
-
-      {{else}}
-
-        <div class="empty">
-          No products available yet. Please check back soon.
+          </article>
+          {{else}}<p>No products available yet. Please check back soon.</p>{{/each}}
         </div>
-
-      {{/each}}
-
-    </div>
-
-    {{#if products.length}}
-      <div class="order-submit">
-        <span>Select quantities, then place your order.</span>
-        <button class="btn btn-primary" type="submit">
-          Place order →
-        </button>
       </div>
-    {{/if}}
+    </div>
+    <div class="kiosk-bottom"><span><b id="menu-total">₱0.00</b> estimated total</span><button type="button" id="menu-cart-button" class="btn btn-primary">Go to Cart →</button></div>
+  </section>
 
-  </form>
+  <section id="cart-screen" class="kiosk-screen" hidden>
+    <div class="kiosk-topbar"><div><p class="eyebrow">YOUR SELECTION</p><h1>Your Cart</h1></div><button type="button" class="btn btn-secondary back-menu">← Back to Menu</button></div>
+    <div id="cart-items" class="kiosk-cart-items"></div>
+    <div class="kiosk-cart-footer"><div class="kiosk-total-line"><span>Total</span><strong id="cart-total">₱0.00</strong></div><button type="button" id="review-order" class="btn btn-primary">Review Order →</button></div>
+  </section>
 
+  <section id="review-screen" class="kiosk-screen" hidden>
+    <div class="kiosk-topbar"><div><p class="eyebrow">ALMOST DONE</p><h1>Review Your Order</h1></div><button type="button" id="edit-order" class="btn btn-secondary">← Back to Cart</button></div>
+    <div id="review-items" class="kiosk-cart-items"></div>
+    <div class="kiosk-review-footer">
+      <label class="kiosk-name-label">Name (optional)<input id="customer-name" type="text" maxlength="100" placeholder="Enter your name"></label>
+      <div class="kiosk-total-line"><span>Total to Pay at Cashier</span><strong id="review-total">₱0.00</strong></div>
+      <p class="kiosk-payment-note">Please review your items and total. Payment will be made at the cashier.</p>
+      <button type="button" id="place-order" class="btn btn-primary kiosk-big-button">Place Order →</button>
+      <form id="order-form" action="/orders" method="POST" hidden><input type="hidden" name="customerName" id="order-customer-name"><div id="order-quantities"></div></form>
+    </div>
+  </section>
 </main>
-
 {{> foot}}
+
+<style>
+.kiosk-app{max-width:1200px;padding-top:24px;padding-bottom:60px}.kiosk-screen{background:#fff;border:1px solid #e5e7df;border-radius:18px;padding:28px;margin:20px 0}.kiosk-screen[hidden]{display:none!important}.start-screen{text-align:center;min-height:65vh;display:flex;flex-direction:column;align-items:center;justify-content:center}.start-screen h1,.kiosk-topbar h1{font-size:clamp(30px,4vw,46px);line-height:1.08;color:#244b38;margin:8px 0}.start-screen h1 em{font-style:italic}.start-screen>p:not(.eyebrow){color:#778078;max-width:480px}.kiosk-cup{font-size:78px;margin:12px}.kiosk-big-button{font-size:18px;padding:16px 32px;margin-top:20px;cursor:pointer}.kiosk-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px}.kiosk-layout{display:grid;grid-template-columns:190px minmax(0,1fr);gap:24px}.kiosk-categories{border-right:1px solid #e5e7df;padding-right:16px}.kiosk-categories h2,.kiosk-menu-heading h2{color:#244b38}.kiosk-category{display:block;width:100%;text-align:left;border:0;background:#f6f4ee;border-radius:9px;padding:13px 14px;margin:8px 0;cursor:pointer;color:#244b38;font-weight:600}.kiosk-category.active{background:#244b38;color:#fff}.kiosk-menu-heading{display:flex;justify-content:space-between;align-items:center;gap:15px}.kiosk-menu-heading input{max-width:250px;padding:11px;border:1px solid #d9ddd5;border-radius:8px}.kiosk-product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}.kiosk-product{border:1px solid #e5e7df;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.kiosk-product[hidden]{display:none!important}
+.kiosk-product>img,.kiosk-product-placeholder{width:100%;height:140px;object-fit:cover;background:#f6f4ee}.kiosk-product-placeholder{display:grid;place-items:center;font-size:48px}.kiosk-product-info{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}.kiosk-product-info h3{margin:0;color:#244b38}.kiosk-product-info p{margin:0;color:#778078;font-size:13px;min-height:32px}.kiosk-price{color:#244b38}.kiosk-quantity{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:5px}.kiosk-quantity button{width:34px;height:34px;border:1px solid #cbd2c8;border-radius:8px;background:#f6f4ee;font-size:22px;cursor:pointer}.qty-value{font-weight:700;min-width:18px;text-align:center}.add-item{border:0;border-radius:8px;padding:10px;background:#244b38;color:white;font-weight:700;cursor:pointer}.kiosk-bottom,.kiosk-cart-footer{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-top:24px;padding-top:20px;border-top:1px solid #e5e7df}.kiosk-bottom b{font-size:20px;color:#244b38}.kiosk-cart-items{display:grid;gap:12px}.kiosk-cart-row{display:grid;grid-template-columns:1fr auto auto auto;align-items:center;gap:18px;border:1px solid #e5e7df;border-radius:10px;padding:16px}.kiosk-cart-row h3{margin:0;color:#244b38}.kiosk-cart-row p{margin:5px 0 0;color:#778078;font-size:13px}.kiosk-cart-row button{cursor:pointer}.cart-qty{display:flex;align-items:center;gap:10px}.cart-qty button,.remove-item{border:1px solid #d9ddd5;background:#f6f4ee;border-radius:7px;padding:7px 10px}.remove-item{color:#9b3939}.kiosk-total-line{display:flex;justify-content:space-between;align-items:center;font-size:20px;font-weight:700;color:#244b38;margin-bottom:15px}.kiosk-cart-footer{display:block;max-width:600px;margin-left:auto}.kiosk-cart-footer .btn{float:right}.kiosk-cart-footer:after{content:"";display:block;clear:both}.kiosk-review-footer{max-width:620px;margin:24px 0 0 auto}.kiosk-name-label{display:grid;gap:8px;margin-bottom:22px;color:#244b38;font-weight:600}.kiosk-name-label input{padding:12px;border:1px solid #d9ddd5;border-radius:8px}.kiosk-payment-note{color:#778078;line-height:1.5}.kiosk-review-footer .kiosk-big-button{width:100%}.kiosk-empty{padding:25px;text-align:center;color:#778078;background:#f6f4ee;border-radius:10px}.btn{cursor:pointer}.btn-secondary{border:1px solid #d9ddd5;background:#f6f4ee;color:#244b38;border-radius:8px;padding:12px 16px}@media(max-width:760px){.kiosk-screen{padding:16px}.kiosk-layout{grid-template-columns:1fr}.kiosk-categories{border-right:0;border-bottom:1px solid #e5e7df;padding:0 0 12px}.kiosk-categories>div{display:flex;flex-wrap:wrap;gap:5px}.kiosk-category{width:auto;margin:0}.kiosk-menu-heading,.kiosk-topbar{align-items:flex-start;flex-direction:column}.kiosk-cart-row{grid-template-columns:1fr auto;gap:10px}.kiosk-cart-row .cart-qty{grid-column:1}.kiosk-cart-row .remove-item{grid-column:2;grid-row:2}.kiosk-bottom{align-items:flex-start;flex-direction:column}}
+</style>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const screens = ['start-screen','menu-screen','cart-screen','review-screen'];
+  const show = (id) => screens.forEach(name => { $(name).hidden = name !== id; });
+  const cards = [...document.querySelectorAll('.kiosk-product')].map(card => ({
+  id: card.dataset.id,
+  name: card.dataset.name || '',
+  description: card.dataset.description || '',
+  price: Number(card.dataset.price) || 0,
+  image: card.dataset.image || '',
+  category: card.dataset.category || classify(`${card.dataset.name || ''} ${card.dataset.description || ''}`),
+  qty: 0,
+  card
+}));
+  const cart = new Map();
+  let activeCategory = 'All Items';
+function classify(text) {
+    const s = text.toLowerCase();
+
+    if (/cookie|cookies/.test(s)) {
+        return 'Cookies';
+    }
+
+    if (/milk tea|milktea|wintermelon|taro|brown sugar/.test(s)) {
+        return 'Milk Tea';
+    }
+
+    if (/tea|matcha|lemonade|juice|smoothie/.test(s)) {
+        return 'Non-Coffee';
+    }
+
+    if (/snack|sandwich|cake|bread|pastry|muffin/.test(s)) {
+        return 'Snacks';
+    }
+
+    return 'Coffee';
+}
+  const money = n => '₱' + n.toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const total = () => [...cart.values()].reduce((sum,item)=>sum+item.price*item.qty,0);
+  const count = () => [...cart.values()].reduce((sum,item)=>sum+item.qty,0);
+  function updateCard(item){ item.card.querySelector('.qty-value').textContent=item.qty; }
+  function add(item,amount=1){ item.qty=Math.max(0,item.qty+amount); if(item.qty) cart.set(item.id,item); else cart.delete(item.id); updateCard(item); updateSummary(); }
+  function updateSummary(){ $('cart-count').textContent=count(); $('menu-total').textContent=money(total()); }
+  function renderCategories(){
+    const names=['All Items',...new Set(cards.map(item=>item.category))];
+    $('category-list').innerHTML='';
+    names.forEach(name=>{const b=document.createElement('button');b.type='button';b.className='kiosk-category'+(name===activeCategory?' active':'');b.textContent=name;b.addEventListener('click',()=>{activeCategory=name;renderCategories();filterMenu();});$('category-list').appendChild(b);});
+  }
+  function filterMenu(){const q=$('menu-search').value.trim().toLowerCase();cards.forEach(item=>{const matchCategory=activeCategory==='All Items'||item.category===activeCategory;const matchText=`${item.name} ${item.description}`.toLowerCase().includes(q);item.card.hidden=!(matchCategory&&matchText);});$('category-title').textContent=activeCategory;}
+  function renderCart(target){
+    const host=$(target);host.innerHTML='';
+    if(!cart.size){host.innerHTML='<div class="kiosk-empty">Your cart is empty. Go back to the menu and add items.</div>';return;}
+    cart.forEach(item=>{const row=document.createElement('div');row.className='kiosk-cart-row';
+      const info=document.createElement('div');const title=document.createElement('h3');title.textContent=item.name;const desc=document.createElement('p');desc.textContent=money(item.price)+' each';info.append(title,desc);
+      const qty=document.createElement('div');qty.className='cart-qty';const minus=document.createElement('button');minus.type='button';minus.textContent='−';minus.onclick=()=>{add(item,-1);renderCart(target);renderCart(target==='cart-items'?'review-items':'cart-items');updateTotals();};const num=document.createElement('b');num.textContent=item.qty;const plus=document.createElement('button');plus.type='button';plus.textContent='+';plus.onclick=()=>{add(item,1);renderCart(target);renderCart(target==='cart-items'?'review-items':'cart-items');updateTotals();};qty.append(minus,num,plus);
+      const subtotal=document.createElement('strong');subtotal.textContent=money(item.price*item.qty);const remove=document.createElement('button');remove.type='button';remove.className='remove-item';remove.textContent='Remove';remove.onclick=()=>{add(item,-item.qty);renderCart('cart-items');renderCart('review-items');updateTotals();};row.append(info,qty,subtotal,remove);host.appendChild(row);
+    });
+  }
+  function updateTotals(){ $('cart-total').textContent=money(total());$('review-total').textContent=money(total());updateSummary(); }
+  cards.forEach(item=>{item.card.querySelector('.qty-minus').addEventListener('click',()=>add(item,-1));item.card.querySelector('.qty-plus').addEventListener('click',()=>add(item,1));item.card.querySelector('.add-item').addEventListener('click',()=>{if(item.qty===0)add(item,1);show('menu-screen');});});
+  $('start-order').addEventListener('click',()=>{show('menu-screen');});
+  $('open-cart').addEventListener('click',()=>{renderCart('cart-items');updateTotals();show('cart-screen');});
+  $('menu-cart-button').addEventListener('click',()=>{renderCart('cart-items');updateTotals();show('cart-screen');});
+  document.querySelectorAll('.back-menu').forEach(button=>button.addEventListener('click',()=>show('menu-screen')));
+  $('review-order').addEventListener('click',()=>{if(!cart.size){alert('Please add at least one item first.');return;}renderCart('review-items');updateTotals();show('review-screen');});
+  $('edit-order').addEventListener('click',()=>{renderCart('cart-items');updateTotals();show('cart-screen');});
+  $('menu-search').addEventListener('input',filterMenu);
+  $('place-order').addEventListener('click',()=>{if(!cart.size){alert('Please add at least one item first.');return;}if(!confirm('Place this order? Payment will be made at the cashier.'))return;$('order-customer-name').value=$('customer-name').value.trim();$('order-quantities').innerHTML='';cart.forEach(item=>{const input=document.createElement('input');input.type='hidden';input.name=`quantity[product_${item.id}]`;input.value=item.qty;$('order-quantities').appendChild(input);});$('order-form').submit();});
+  renderCategories();filterMenu();updateSummary();show('start-screen');
+})();
+</script>
 </body>
 </html>

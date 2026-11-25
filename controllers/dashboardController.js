@@ -56,24 +56,36 @@ export async function productsPage(req, res) {
 }
 
 export async function addProduct(req, res) {
-  const { name, description, price } = req.body;
+  const { name, description, price, category } = req.body;
 
-  if (!name || !(Number(price) >= 0)) {
-    req.session.notice = "Enter a product name and valid price.";
+  const allowedCategories = [
+    "Coffee",
+    "Non-Coffee",
+    "Milk Tea",
+    "Cookies",
+    "Snacks"
+  ];
+
+  if (
+    !name ||
+    !(Number(price) >= 0) ||
+    !allowedCategories.includes(category)
+  ) {
+    req.session.notice = "Enter a product name, valid price, and category.";
     return res.redirect("/products");
   }
 
   await Product.create({
     name,
     description,
+    category,
     price,
     image: req.file ? `/uploads/${req.file.filename}` : null
   });
 
-  req.session.notice = "Product added.";
+  req.session.notice = "Product added successfully.";
   res.redirect("/products");
 }
-
 export async function toggleProduct(req, res) {
   const product = await Product.findByPk(req.params.id);
 
